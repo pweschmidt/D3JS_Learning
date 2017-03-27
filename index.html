@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<head>
+<style> /* set the CSS */
+ 
+body { font: 12px Arial;}
+ 
+path { 
+  stroke: steelblue;
+  stroke-width: 2;
+  fill: none;
+}
+ 
+.axis path,
+.axis line {
+	fill: none;
+	stroke: grey;
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+</style>    
+</head>
+<body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script>
+            var cd4Data = [{date: "30-Mar-09",   amount:"348.00"},
+                            {date: "12-May-09",   amount:"397.00"},
+                            {date: "09-Aug-09",   amount:"334.00"},
+                            {date: "27-Sep-09",   amount:"292.00"},
+                            {date: "11-Oct-09",   amount:"292.00"},
+                            {date: "22-Nov-09",   amount:"511.00"},
+                            {date: "15-Dec-09",   amount:"476.00"},
+                            {date: "12-Jan-10",   amount:"384.00"},
+                            {date: "05-May-10",   amount:"575.00"},
+                            {date: "01-Sep-10",   amount:"575.00"},
+                            {date: "07-Mar-11",   amount:"919.00"},
+                            {date: "07-Sep-11",   amount:"603.00"},
+                            {date: "05-Mar-12",   amount:"946.00"},
+                            {date: "25-Feb-13",   amount:"959.00"},
+                            {date: "24-Feb-14",   amount:"858.00"},
+                            {date: "22-Sep-14",   amount:"793.00"},
+                            {date: "23-Feb-15",   amount:"946.00"},
+                            {date: "22-Feb-16",   amount:"938.00"},
+                            {date: "06-Mar-17",   amount:"941.00"}];
+            var parseDate = d3.timeParse("%d-%b-%y");
+            var margin = {top: 20, right: 20, bottom: 30, left: 50},
+                            width = 960 - margin.left - margin.right,
+                            height = 500 - margin.top - margin.bottom;
+            var x = d3.scaleTime().range([0,width]);
+            var y = d3.scaleLinear().range([height,0]);
+
+            var xAxis = d3.axisBottom(x).ticks(cd4Data.length);
+            x.domain(d3.extent(cd4Data.map( function(d) {return parseDate(d.date);})));
+            y.domain(d3.extent(cd4Data.map (function(d) {return parseFloat(d.amount);})));
+ 
+            var vLine = d3.line()
+                .x(function(d) {return x(parseDate(d.date));})
+                .y(function(d) {return y(parseFloat(d.amount));});
+                
+            var svg = d3.select("body").append("svg")
+                .attr("width",width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+            
+            svg.append("path")
+                .data([cd4Data])
+                .attr("class", "line")
+                .attr("d", vLine);
+            
+            svg.append("g")
+                .attr("transform","translate(0," + height +")")
+                .call(xAxis);
+            
+            svg.append("g")
+                .call(d3.axisLeft(y));
+            
+        </script>
+    
+</body>
