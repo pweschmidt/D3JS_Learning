@@ -49,26 +49,32 @@ path {
                             {date: "22-Feb-16",   amount:"938.00"},
                             {date: "06-Mar-17",   amount:"941.00"}];
             var parseDate = d3.timeParse("%d-%b-%y");
+						var parsedData = cd4Data.map(function (d){
+							return {
+								date: parseDate(d.date),
+								amount: parseFloat(d.amount)
+							}
+							});
             var margin = {top: 20, right: 20, bottom: 30, left: 50},
                             width = 960 - margin.left - margin.right,
                             height = 500 - margin.top - margin.bottom;
             var x = d3.scaleTime().range([0,width]);
             var y = d3.scaleLinear().range([height,0]);
 
-            var xAxis = d3.axisBottom(x).ticks(cd4Data.length);
-            x.domain(d3.extent(cd4Data.map( function(d) {return parseDate(d.date);})));
-            y.domain(d3.extent(cd4Data.map (function(d) {return parseFloat(d.amount);})));
+            var xAxis = d3.axisBottom(x).ticks(parsedData.length);
+            x.domain(d3.extent(parsedData, function(d) {return d.date;}));
+            y.domain(d3.extent(parsedData, function(d) {return d.amount;}));
  
             var vLine = d3.line()
-                .x(function(d) {return x(parseDate(d.date));})
-                .y(function(d) {return y(parseFloat(d.amount));});
+                .x(function(d) {return x(d.date);})
+                .y(function(d) {return y(d.amount);});
                 
             var svg = d3.select("body").append("svg")
                 .attr("width",width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
             
             svg.append("path")
-                .data([cd4Data])
+                .data([parsedData])
                 .attr("class", "line")
                 .attr("d", vLine);
             
